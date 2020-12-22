@@ -1,0 +1,7 @@
+{
+	"name": "day18a",
+	"license": "Boost",
+	"dependencies": {
+		"libdmathexpr": {"version": "~>1.0.0"}
+	}
+}
