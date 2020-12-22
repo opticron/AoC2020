@@ -24,13 +24,23 @@ int main(string[]argv) {
 	int accum = 0;
 	foreach (group;groups) {
 		if (!group.length) continue;
-		bool[char]answers;
+		int[char]answers;
+		// being lazy here...and it paid off
 		foreach (answer;group) {
 			if (answer >= 'a' && answer <= 'z') {
-				answers[answer] = true;
+				if (answer !in answers) answers[answer] = 0;
+				answers[answer]++;
 			}
 		}
-		accum += answers.keys.length;
+		auto group_members = group.split("\n");
+		ulong num_group = group_members.length;
+		// handle trailing newline
+		if (group_members[$-1] == "") num_group--;
+		int all_answered = 0;
+		foreach (key;answers.keys) {
+			if (num_group == answers[key]) all_answered++;
+		}
+		accum += all_answered;
 	}
 	writeln(accum);
 	return 0;
