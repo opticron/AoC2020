@@ -1,7 +1,7 @@
 import std.stdio:writeln;
 import std.file:readText;
 import std.string:strip, split;
-import std.algorithm:map, count;
+import std.algorithm:map;
 import std.conv:to;
 
 int main(string[]argv) {
@@ -16,11 +16,10 @@ int main(string[]argv) {
 	foreach (line;lines) {
 		if (!line.length) continue;
 		auto fields = line.split(" ");
-		auto range = fields[0].split("-").map!("a.to!(int)");
-		auto character = fields[1][0..1];
+		auto valid_pos = fields[0].split("-").map!("a.to!(int)");
+		auto character = fields[1][0];
 		auto password = fields[2];
-		auto total = count(password, character[0]);
-		if (total >= range[0] && total <= range[1]) good_count++;
+		if ((character == password[valid_pos[0]-1]) ^ (character == password[valid_pos[1]-1])) good_count++;
 	}
 	writeln(good_count);
 	return 0;
