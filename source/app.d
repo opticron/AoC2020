@@ -5,19 +5,19 @@ import std.algorithm:canFind;
 import std.conv:to;
 
 struct op {
-	string type;
+	char type;
 	int param;
 	bool visited = false;
 	static op opCall(string raw_op) {
 		op this_op;
 		auto op_parts = raw_op.split;
-		this_op.type = op_parts[0];
+		this_op.type = op_parts[0][0];
 		this_op.param = op_parts[1].to!(int);
 		return this_op;
 	}
 	void execute() {
 		if (visited) throw new Exception("Loop detected");
-		switch(type[0]) {
+		switch(type) {
 		case 'n':
 			current_op++;
 			break;
@@ -32,6 +32,20 @@ struct op {
 			break;
 		}
 		visited = true;
+	}
+	void toggle_type() {
+		switch(type) {
+		case 'n':
+			type = 'j';
+			break;
+		case 'a':
+			throw new Exception("Untoggleable");
+		case 'j':
+			type = 'n';
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -52,14 +66,23 @@ int main(string[]argv) {
 		if (!raw_op.length) continue;
 		ops ~= op(raw_op);
 	}
-	// execute code
-	try {
-		while(true) {
-			// execute current instruction
-			ops[current_op].execute();
+	// modify each instruction and try running it
+	foreach(i; 0..ops.length) {
+		try {
+			auto mod_ops = ops.dup;
+			mod_ops[i].toggle_type();
+			acc = 0;
+			current_op = 0;
+			while(current_op < mod_ops.length) {
+				// execute current instruction
+				mod_ops[current_op].execute();
+			}
+			// execution successful
+			break;
+		} catch (Exception e) {
+			// either it failed to run or it threw on modification
 		}
-	} catch (Exception e) {
-		writeln(acc);
 	}
+	writeln(acc);
 	return 0;
 }
