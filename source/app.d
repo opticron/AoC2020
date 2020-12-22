@@ -1,6 +1,6 @@
 import std.stdio:writeln;
 import std.file:readText;
-import std.string:strip, split;
+import std.string:split;
 import std.algorithm:map;
 import std.conv:to;
 
