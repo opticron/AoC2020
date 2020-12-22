@@ -14,9 +14,11 @@ int main(string[]argv) {
 	auto entries = file.readText().split().map!("a.to!(int)");
 	foreach (entry;entries) {
 		foreach (entry2;entries) {
-			if (entry+entry2 == 2020) {
-				writeln(entry*entry2);
-				return 0;
+			foreach (entry3;entries) {
+				if (entry+entry2+entry3 == 2020) {
+					writeln(entry*entry2*entry3);
+					return 0;
+				}
 			}
 		}
 	}
