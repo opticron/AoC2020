@@ -15,18 +15,19 @@ string sanitize_rule_content(string content) {
 
 int[string][string]ruleset;
 string[][string]contains;
-void find_contains(string start, ref string[]total_bags) {
+int find_contains(string start) {
 	// assume start has already been added to the total_bags list
-	// if start isn't in contains, end condition because nothing contains it
-	if (start !in contains) return;
-	string[]search = contains[start];
+	// if start isn't in ruleset, end condition because it contains nothing
+	if (start !in ruleset) return 0;
+	int total = 0;
+	string[]search = ruleset[start].keys;
 	foreach(item;search) {
-		// bag already searched
-		if (canFind(total_bags, item)) continue;
-		// add bag and continue search
-		total_bags ~= item;
-		find_contains(item, total_bags);
+		// add one for each of the top-level bags in this one
+		total += ruleset[start][item];
+		// add the number of bags it contains for each of the top-level bags in this one
+		total += ruleset[start][item] * find_contains(item);
 	}
+	return total;
 }
 
 int main(string[]argv) {
@@ -53,8 +54,7 @@ int main(string[]argv) {
 			contains[content_name] ~= rule_name;
 		}
 	}
-	string[]total_bags = [];
-	find_contains("shiny gold", total_bags);
-	writeln(total_bags.length);
+	int total_bags = find_contains("shiny gold");
+	writeln(total_bags);
 	return 0;
 }
