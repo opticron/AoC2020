@@ -6,6 +6,59 @@ import std.conv:to;
 import std.array:array;
 import std.range;
 
+ulong[][]break_input(ulong[]input) {
+	ulong[][]input_sets = [];
+	int set_run = 0;
+	while (input.length > set_run+1) {
+		if (input[set_run+1] - input[set_run] < 3) {
+			set_run++;
+			continue;
+		}
+		// break the set off
+		if (set_run > 1) {
+			input_sets ~= input[0..set_run+1];
+		}
+		input = input[set_run+1..$];
+		set_run = 0;
+	}
+	// add the final set
+	if (input.length > 2) input_sets ~= input;
+	return input_sets;
+}
+
+ulong[]generate_bitarray(int i, ulong[]input) {
+	ulong[]generated = [];
+	int position = 0;
+	while(i > 0) {
+		if (i&1) generated ~= input[position];
+		i>>=1;
+		position++;
+	}
+	return generated;
+}
+
+bool is_valid_sequence(ulong[]generated) {
+	foreach (pair;zip(generated[0..$-1], generated[1..$])) {
+		if (pair[1]-pair[0] > 3) return false;
+	}
+	return true;
+}
+
+ulong get_traversals(ulong[]input) {
+	ulong initial = input.front;
+	input.popFront;
+	ulong terminal = input.back;
+	input.popBack;
+	ulong count = 0;
+	foreach (i;0..(1<<input.length)) {
+		ulong[]generated = [initial] ~ generate_bitarray(i, input) ~ [terminal];
+		if (is_valid_sequence(generated)) {
+			count++;
+		}
+	}
+	return count;
+}
+
 int main(string[]argv) {
 	string file = "input/sample.txt";
 	if (argv.length < 2) {
@@ -19,14 +72,8 @@ int main(string[]argv) {
 	input.sort;
 	auto input_dup = input.dup;
 	input = 0 ~ input;
-	input_dup ~= input.back+3;
-	int three_diff = 0;
-	int one_diff = 0;
-	foreach (pair;zip(input, input_dup)) {
-		auto diff = pair[1]-pair[0];
-		if (diff == 3) three_diff++;
-		if (diff == 1) one_diff++;
-	}
-	writeln(one_diff*three_diff);
+	ulong[][]input_sets = break_input(input);
+	ulong[]set_traversals = input_sets.map!(get_traversals)().array();
+	writeln(reduce!"a*b"(cast(ulong)1, set_traversals));
 	return 0;
 }
