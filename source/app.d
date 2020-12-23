@@ -16,14 +16,16 @@ int main(string[]argv) {
 	}
 	auto raw_input = file.readText().split("\n");
 	if (raw_input[$-1] == "") raw_input.popBack;
-	int ns = 0;
-	int ew = 0;
+	int ns = 1;
+	int ew = 10;
+	int ship_ns = 0;
+	int ship_ew = 0;
 	string directions = "NESW";
 	char current_direction = 'E';
 	foreach (entry;raw_input) {
 		char command = entry[0];
 		int value = entry[1..$].to!(int);
-eval_f:		switch(command) {
+		final switch(command) {
 		case 'N':
 			ns += value;
 			break;
@@ -38,19 +40,44 @@ eval_f:		switch(command) {
 			break;
 		case 'R':
 			value /= 90;
-			current_direction = directions[(directions.indexOf(current_direction)+value)%4];
+			final switch(value) {
+			case 1:
+				swap(ew,ns);
+				ns *= -1;
+				break;
+			case 2:
+				ew *= -1;
+				ns *= -1;
+				break;
+			case 3:
+				swap(ew,ns);
+				ew *= -1;
+				break;
+			}
 			break;
 		case 'L':
 			value /= 90;
-			current_direction = directions[(directions.indexOf(current_direction)-value+4)%4];
+			final switch(value) {
+			case 1:
+				swap(ew,ns);
+				ew *= -1;
+				break;
+			case 2:
+				ew *= -1;
+				ns *= -1;
+				break;
+			case 3:
+				swap(ew,ns);
+				ns *= -1;
+				break;
+			}
 			break;
 		case 'F':
-			command = current_direction;
-			goto eval_f;
-		default:
+			ship_ns += ns * value;
+			ship_ew += ew * value;
 			break;
 		}
 	}
-	writeln(abs(ns)+abs(ew));
+	writeln(abs(ship_ns)+abs(ship_ew));
 	return 0;
 }
