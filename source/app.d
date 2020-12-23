@@ -6,20 +6,36 @@ import std.conv:to;
 import std.array:array;
 import std.range;
 
+bool in_bounds(char[][]seats, long i, long j) {
+	if (i < 0) return false;
+	if (j < 0) return false;
+	if (i >= seats.length) return false;
+	if (j >= seats[i].length) return false;
+	return true;
+}
+
+char find_seat(char[][]seats, long i, long j, long i_adj, long j_adj) {
+	long i_slope = i_adj - i;
+	long j_slope = j_adj - j;
+	while (in_bounds(seats, i_adj, j_adj) && seats[i_adj][j_adj] == '.') {
+		i_adj+=i_slope;
+		j_adj+=j_slope;
+	}
+	if (in_bounds(seats, i_adj, j_adj)) return seats[i_adj][j_adj];
+	// out of bounds is empty seat
+	return 'L';
+}
+
 bool apply_change(char[][]seats, ref char[][]new_seats, ulong i_orig, ulong j_orig) {
 	int occupied_adj = 0;
 	long i = i_orig;
 	long j = j_orig;
 	foreach (i_adj; (i-1)..(i+2)) foreach (j_adj; (j-1)..(j+2)) {
 		if (i_adj == i && j_adj == j) continue;
-		if (i_adj < 0) continue;
-		if (j_adj < 0) continue;
-		if (i_adj >= seats.length) continue;
-		if (j_adj >= seats[i].length) continue;
-		if (seats[i_adj][j_adj] == '#') occupied_adj++;
+		if (find_seat(seats, i, j, i_adj, j_adj) == '#') occupied_adj++;
 	}
 	bool changed = true;
-	if (seats[i][j] == '#' && occupied_adj >= 4) {
+	if (seats[i][j] == '#' && occupied_adj >= 5) {
 		new_seats[i][j] = 'L';
 	} else if (seats[i][j] == 'L' && occupied_adj == 0) {
 		new_seats[i][j] = '#';
