@@ -43,9 +43,9 @@ int main(string[]argv) {
 		process_number(elf_memory, number, iterations, last_number_new, last_number_prev_iteration);
 		iterations++;
 	}
-	// run through the iterations, <2020 is fine here since we start at 0
+	// run through the iterations, <30000000 is fine here since we start at 0
 	ulong next;
-	for (;iterations < 2020; iterations++) {
+	for (;iterations < 30000000; iterations++) {
 		next = get_next_number(last_number_prev_iteration, last_number_new, iterations);
 		process_number(elf_memory, next, iterations, last_number_new, last_number_prev_iteration);
 	}
