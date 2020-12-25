@@ -126,7 +126,8 @@ IMathObject parseMathExpr(string input) {
 		}
 	}
 	// multiplication or addition
-	parseHelper((MOOpType o){return o == MOOpType.Multiplication || o == MOOpType.Addition;});
+	parseHelper((MOOpType o){return o == MOOpType.Addition;});
+	parseHelper((MOOpType o){return o == MOOpType.Multiplication;});
 	// verify that we're left with a single item in the list
 	long count = 0;
 	uint first;

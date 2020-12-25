@@ -1,5 +1,5 @@
 {
-	"name": "day18a",
+	"name": "day18b",
 	"license": "Boost",
 	"dependencies": {
 		"libdmathexpr": {"version": "~>1.0.0"}
