@@ -1,7 +1,7 @@
 import std.stdio:writeln;
 import std.file:readText;
 import std.string:strip, split, indexOf, chompPrefix, chop;
-import std.algorithm:map, sort, fold, swap, filter, minIndex;
+import std.algorithm:map, sort, fold, swap, filter, minIndex, canFind;
 import std.conv:to;
 import std.array:array;
 import std.range;
@@ -9,8 +9,8 @@ import std.math:abs;
 import std.bitmanip:BitArray;
 
 interface IRule {
-	// return of 0 means no match
-	int match(string);
+	// return of [] means no match
+	int[]match(string);
 }
 
 // global mapping of ulongs to IRules
@@ -25,11 +25,10 @@ class AlternationRule:IRule {
 		opt1 = new ListRule(parts[0]);
 		opt2 = new ListRule(parts[1]);
 	}
-	int match(string input) {
-		int acc = opt1.match(input);
-		if (acc) return acc;
-		acc = opt2.match(input);
-		return acc;
+	int[]match(string input) {
+		int[]accs = opt1.match(input);
+		accs ~= opt2.match(input);
+		return accs;
 	}
 }
 
@@ -43,9 +42,10 @@ class LiteralRule:IRule {
 		if (specifier[2] != '"') throw new Exception("bad close quote for literal");
 		matchChar = specifier[1];
 	}
-	int match(string input) {
-		if (input[0] == matchChar) return 1;
-		return 0;
+	int[]match(string input) {
+		if (!input.length) return [];
+		if (input[0] == matchChar) return [1];
+		return [];
 	}
 }
 
@@ -55,15 +55,21 @@ class ListRule:IRule {
 	this(string specifier) {
 		subrules = specifier.split(" ").map!(a => a.to!ulong).array();
 	}
-	int match(string input) {
-		int acc = 0;
+	int[]match(string input) {
+		// measure of how many characters were consumed
+		int[]accs = [0];
 		foreach(rule;subrules) {
-			int consumed = rule_mapping[rule].match(input);
-			if (!consumed) return 0;
-			input = input[consumed..$];
-			acc+=consumed;
+			int[]matches;
+			foreach (acc;accs) {
+				int[]consumed = rule_mapping[rule].match(input[acc..$]);
+				if (!consumed.length) continue;
+				consumed = consumed.map!(a => a+acc).array();
+				matches ~= consumed;
+			}
+			// expand accs using found match lengths, PERMUTE
+			accs = matches;
 		}
-		return acc;
+		return accs;
 	}
 }
 
@@ -102,7 +108,7 @@ int main(string[]argv) {
 
 	int total_good = 0;
 	foreach (message;message_input) {
-		if (rule_mapping[0].match(message) == message.length) total_good++;
+		if (rule_mapping[0].match(message).canFind(message.length)) total_good++;
 	}
 	writeln(total_good);
 	return 0;
