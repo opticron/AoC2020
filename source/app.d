@@ -1,4 +1,4 @@
-import std.stdio:writeln;
+import std.stdio:writeln,write;
 import std.file:readText;
 import std.string:strip, split, indexOf, chompPrefix, chop;
 import std.algorithm:map, sort, fold, swap, filter, minIndex, canFind, countUntil, remove;
@@ -61,14 +61,10 @@ int main(string[]argv) {
 		}
 	}
 
-	foreach (allergen_ingredient;found_allergens.values) {
-		 wordcounts.remove(allergen_ingredient);
+	foreach (allergen;found_allergens.keys.sort) {
+		write(found_allergens[allergen],",");
 	}
-	int acc = 0;
-	foreach (i;wordcounts.values) {
-		acc+=i;
-	}
-	writeln(acc);
+	writeln();
 	return 0;
 }
 
