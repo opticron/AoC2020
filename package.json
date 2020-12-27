@@ -1,4 +1,5 @@
 {
-	"name": "day23a",
+	"name": "day23b",
+	"buildOptions": ["optimize", "releaseMode"],
 	"license": "Boost"
 }

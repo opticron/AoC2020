@@ -20,7 +20,9 @@ int main(string[]argv) {
 
 	int[]cups = raw_input[0].map!(a => (""~cast(char)a).to!int).array();
 	writeln(cups);
-	foreach (i; 0..100) {
+	foreach (i;10..1000001) cups ~= i;
+	foreach (i; 0..10000000) {
+		if (!(i%100)) writeln("iteration ",i);
 		int current = cups.front;
 		cups.popFront;
 		int[]moving = cups[0..3];
@@ -29,11 +31,8 @@ int main(string[]argv) {
 		ulong destIndex = cups.countUntil(dest);
 		cups = cups[0..destIndex+1]~moving~cups[destIndex+1..$]~current;
 	}
-	writeln(cups);
 	ulong one_loc = cups.countUntil(1);
-	cups = cups[one_loc+1..$]~cups[0..one_loc];
-	writeln(cups.fold!((a,b) => a ~= (b+'0'))(""));
-
+	writeln(cups[one_loc+1]*cups[one_loc+2]);
 	return 0;
 }
 
