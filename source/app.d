@@ -32,7 +32,8 @@ int main(string[]argv) {
 		cups = cups[0..destIndex+1]~moving~cups[destIndex+1..$]~current;
 	}
 	ulong one_loc = cups.countUntil(1);
-	writeln(cups[one_loc+1]*cups[one_loc+2]);
+	writeln(cups[one_loc+1],", ",cups[one_loc+2]);
+	writeln(cast(ulong)cups[one_loc+1]*cast(ulong)cups[one_loc+2]);
 	return 0;
 }
 
