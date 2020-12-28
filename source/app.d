@@ -27,7 +27,7 @@ int main(string[]argv) {
 		cups.popFront;
 		int[]moving = cups[0..3];
 		cups = cups[3..$];
-		int dest = cups.getDestination(current);
+		int dest = moving.getDestination(current);
 		ulong destIndex = cups.countUntil(dest);
 		cups = cups[0..destIndex+1]~moving~cups[destIndex+1..$]~current;
 	}
@@ -38,7 +38,9 @@ int main(string[]argv) {
 }
 
 int getDestination(int[]cups, int current) {
-	auto lower = cups.filter!(a => a < current).array();
-	if (lower.length) return lower.maxElement;
-	return cups.maxElement;
+	do {
+		current--;
+		if (!current) current = 1000000;
+	} while (current == cups[0] || current == cups[1] || current == cups[2]);
+	return current;
 }
