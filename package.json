@@ -1,4 +1,5 @@
 {
 	"name": "day13b",
+	"buildOptions": ["optimize", "releaseMode"],
 	"license": "Boost"
 }

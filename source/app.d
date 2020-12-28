@@ -13,35 +13,37 @@ import std.math:abs;
 // put all 8 of these into a matrix, get RREF form, see wiki page for solution from that point
 
 bool constraints_valid(ulong[]bus_ids, ulong i) {
-	ulong stamp = i*bus_ids[0];
 	foreach (j,id;bus_ids) {
 		if (!id) continue;
-		if ((stamp+j)%id) return false;
+		if ((i+j)%id) return false;
 	}
 	return true;
 }
 
 int main(string[]argv) {
 	string file = "input/sample.txt";
-	ulong start = 1;
 	if (argv.length < 2) {
 		writeln("defaulting to sample");
 	} else {
 		file = argv[1];
-		start = 130000000000;
 	}
 	auto raw_input = file.readText().split("\n");
 	if (raw_input[$-1] == "") raw_input.popBack;
 	ulong[]bus_ids = raw_input[1].split(",").map!(a => a == "x"?"0":a).map!"a.to!ulong".array();
-	ulong max_index = bus_ids.maxIndex;
-	for (ulong i = start; true; i++) {
-		if (i%100000000 == 0) writeln(i*bus_ids[max_index]);
-		// quick check
-		ulong max_stamp = i*bus_ids[max_index];
-		if ((max_stamp-max_index)%bus_ids[0]) continue;
-		if (constraints_valid(bus_ids, (max_stamp-max_index)/bus_ids[0])) {
-			writeln(max_stamp-max_index);
-			break;
+	// drop 0s off the end
+	while (!bus_ids[$-1]) bus_ids = bus_ids[0..$-1];
+	ulong step_size = bus_ids[0];
+	ulong search_target_index = 1;
+	for (ulong i = 0; true; i+=step_size) {
+		while (search_target_index < bus_ids.length && !bus_ids[search_target_index]) search_target_index++;
+		// skip 0s
+		if (!((i+search_target_index)%bus_ids[search_target_index])) {
+			step_size *= bus_ids[search_target_index];
+			search_target_index++;
+			if (search_target_index == bus_ids.length) {
+				writeln(i);
+				break;
+			}
 		}
 	}
 	return 0;
